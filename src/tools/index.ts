@@ -24,6 +24,7 @@ import { registerTaskCommentsTool } from './task-comments';
 import { registerTaskRemindersTool } from './task-reminders';
 import { registerTaskLabelsTool } from './task-labels';
 import { registerTaskRelationsTool } from './task-relations';
+import { registerTaskMoveTool } from './tasks/move-to-bucket';
 import { registerProjectsTool } from './projects/index';
 import { registerLabelsTool } from './labels';
 import { registerTeamsTool } from './teams';
@@ -45,6 +46,7 @@ export {
   registerTaskRemindersTool,
   registerTaskLabelsTool,
   registerTaskRelationsTool,
+  registerTaskMoveTool,
   registerProjectsTool,
   registerLabelsTool,
   registerTeamsTool,
@@ -76,6 +78,7 @@ export function registerTools(
   registerTaskRemindersTool(server, authManager, clientFactory);
   registerTaskLabelsTool(server, authManager, clientFactory);
   registerTaskRelationsTool(server, authManager, clientFactory);
+  registerTaskMoveTool(server, authManager);
 
   // Only register tools that require clientFactory if it's available
   if (clientFactory) {
@@ -103,4 +106,3 @@ export function registerTools(
     }
   }
 }
-

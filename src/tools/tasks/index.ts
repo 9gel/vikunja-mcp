@@ -25,6 +25,7 @@ import { assignUsers, unassignUsers, listAssignees } from './assignees';
 import { handleComment } from './comments';
 import { addReminder, removeReminder, listReminders } from './reminders';
 import { applyLabels, removeLabels, listTaskLabels } from './labels';
+import { moveTaskToBucket } from './move-to-bucket';
 
 
 /**
@@ -146,6 +147,7 @@ export function registerTasksTool(
         'apply-label',
         'remove-label',
         'list-labels',
+        'move-to-bucket',
       ]),
       // Task creation/update fields
       title: z.string().optional(),
@@ -169,6 +171,9 @@ export function registerTasksTool(
       // List specific filters
       allProjects: z.boolean().optional(),
       done: z.boolean().optional(),
+      // Kanban bucket move fields
+      viewId: z.number().int().positive().optional(),
+      bucketId: z.number().int().positive().optional(),
       // Comment fields
       comment: z.string().optional(),
       commentId: z.number().optional(),
@@ -286,6 +291,18 @@ export function registerTasksTool(
 
           case 'list-labels':
             return listTaskLabels(args as Parameters<typeof listTaskLabels>[0]);
+
+          case 'move-to-bucket':
+            return moveTaskToBucket(
+              {
+                ...(args.id !== undefined ? { taskId: args.id } : {}),
+                ...(args.projectId !== undefined ? { projectId: args.projectId } : {}),
+                ...(args.viewId !== undefined ? { viewId: args.viewId } : {}),
+                ...(args.bucketId !== undefined ? { bucketId: args.bucketId } : {}),
+                ...(args.sessionId !== undefined ? { sessionId: args.sessionId } : {}),
+              },
+              authManager,
+            );
 
           default:
             throw new MCPError(
