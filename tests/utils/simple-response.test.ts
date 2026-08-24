@@ -7,6 +7,26 @@ import { formatSuccessMessage, createSuccessResponse, createErrorResponse } from
 import type { Task } from '../../src/types/vikunja';
 
 describe('simple-response - Task Formatting', () => {
+  it('should format a single task as a task when it contains labels', () => {
+    const result = formatSuccessMessage(
+      'get-task',
+      'Retrieved task',
+      {
+        id: 9,
+        project_id: 5,
+        title: 'Task with a label',
+        description: 'The task description must remain visible',
+        done: false,
+        labels: [{ id: 3, title: 'sample' }],
+      } as Task,
+    );
+
+    expect(result).toContain('**Task with a label** (ID: 9)');
+    expect(result).toContain('**Description:** The task description must remain visible');
+    expect(result).toContain('**Labels:** sample');
+    expect(result).not.toContain('### 1. **sample**');
+  });
+
   describe('formatSuccessMessage with tasks', () => {
     it('should format task with all fields', () => {
       const task: Task = {

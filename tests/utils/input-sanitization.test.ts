@@ -97,6 +97,11 @@ describe('Input Sanitization Security Tests', () => {
   });
 
   describe('SQL Injection Protection in Filter Values', () => {
+    it('should allow ordinary task prose containing SQL keywords', () => {
+      expect(sanitizeString('Delete this card after the migration is complete.'))
+        .toBe('Delete this card after the migration is complete.');
+    });
+
     it('should block SQL injection attempts in filter values', () => {
       const sqlInjection = "'; DROP TABLE tasks; --";
 

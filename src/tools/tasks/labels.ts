@@ -52,6 +52,26 @@ export async function applyLabels(args: {
           },
         );
       } catch (labelError) {
+        // Vikunja can intermittently report that a label already exists even
+        // when the relation is absent. Reconcile through the bulk endpoint and
+        // verify the final task state before surfacing the original error.
+        const currentTask = await client.tasks.getTask(taskId);
+        const currentLabelIds = (currentTask.labels || [])
+          .map((label) => label.id)
+          .filter((id): id is number => id !== undefined);
+
+        if (!currentLabelIds.includes(labelId)) {
+          await client.tasks.updateTaskLabels(taskId, {
+            label_ids: Array.from(new Set([...currentLabelIds, labelId])),
+          });
+        }
+
+        const verifiedTask = await client.tasks.getTask(taskId);
+        const verifiedLabelIds = (verifiedTask.labels || []).map((label) => label.id);
+        if (verifiedLabelIds.includes(labelId)) {
+          continue;
+        }
+
         // Check if it's an auth error after retries
         if (isAuthenticationError(labelError)) {
           throw new MCPError(

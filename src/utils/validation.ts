@@ -161,10 +161,13 @@ export function sanitizeString(value: string): string {
     /-o-link\s*:/gi,
     /-webkit-binding\s*:/gi,
 
-    // SQL injection patterns
-    /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION|EXECUTE|TRUNCATE)\b)/gi,
+    // SQL injection patterns. Do not reject ordinary prose containing a SQL
+    // keyword (for example, "delete this card"). Require SQL structure or
+    // syntax so task descriptions remain usable.
+    /\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION|EXECUTE|TRUNCATE)\b[\s\S]*\b(FROM|INTO|TABLE|SET|VALUES|WHERE|JOIN|DATABASE|INDEX)\b/gi,
     /(\b(OR|AND)\s+\d+\s*=\s*\d+)/gi,
     /(\b(OR|AND)\s+['"].*['"]\s*=\s*['"].*['"])/gi,
+    /(['"]\s*(?:OR|AND)\s+['"]?\d+['"]?\s*=\s*['"]?\d+)/gi,
     /(\b(WAITFOR\s+DELAY|SLEEP\s*\(|BENCHMARK\s*\(|DBMS_PIPE\.RECEIVE_MESSAGE)\b)/gi,
     /(--|#|\/\*|\*\/)/gi,  // SQL comments
     /(\b(INFORMATION_SCHEMA|SYS|MASTER|MSDB|MYSQL|PG_CATALOG)\b)/gi,
@@ -192,11 +195,11 @@ export function sanitizeString(value: string): string {
     /(!\()([^)]*)(\))/gi,
 
     // NoSQL injection patterns
-    /(\$\w+\s*:)/gi,  // MongoDB operators like $gt, $lt, $where
-    /(\{\s*\$where\s*:)/gi,
-    /(\{\s*\$ne\s*:)/gi,
-    /(\{\s*\$gt\s*:)/gi,
-    /(\{\s*\$regex\s*:)/gi,
+    /(\$\w+\s*["']?\s*:)/gi,  // MongoDB operators like $gt, $lt, $where
+    /(\{\s*\$where\s*["']?\s*:)/gi,
+    /(\{\s*\$ne\s*["']?\s*:)/gi,
+    /(\{\s*\$gt\s*["']?\s*:)/gi,
+    /(\{\s*\$regex\s*["']?\s*:)/gi,
 
     // HTML5 dangerous attributes
     /formaction\s*=/gi,

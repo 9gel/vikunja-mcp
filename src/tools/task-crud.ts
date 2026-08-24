@@ -100,7 +100,7 @@ export function registerTaskCrudTool(
 ): void {
   server.tool(
     'vikunja_task_crud',
-    'Manage individual tasks: create, get, update, delete, list',
+    'Manage individual tasks: create, get, update, delete, list. Descriptions are preserved during updates; provide plain task text without SQL or script syntax.',
     {
       operation: z.enum(['create', 'get', 'update', 'delete', 'list']),
       // Task creation/update fields

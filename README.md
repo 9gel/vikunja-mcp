@@ -267,6 +267,17 @@ vikunja_tasks.create({
   assignees: [1, 3]    // User IDs
 })
 
+// Descriptions are preserved by task updates. Use ordinary prose; the MCP
+// rejects script/injection syntax, but normal words such as "delete" are valid.
+
+// Move a task through Kanban buckets (project 1, view 44)
+vikunja_tasks.move-to-bucket({
+  id: 123,
+  projectId: 1,
+  viewId: 44,
+  bucketId: 7
+})
+
 // Create a recurring task (repeats every week)
 vikunja_tasks.create({
   projectId: 1,
@@ -723,6 +734,9 @@ vikunja_tasks.remove-label({
 // List all labels on a task
 vikunja_tasks.list-labels({ id: 123 })
 // Returns: Task info with detailed label data including colors and descriptions
+
+// Label application is idempotent: existing labels are retained and the
+// final task state is verified after the operation.
 ```
 
 ### Team Management Examples
@@ -1015,6 +1029,7 @@ This standardized format ensures:
     - Optional: description, dueDate, priority, labels, assignees
     - Validates date format (ISO 8601) and IDs
   - `get` - Get task details by ID
+    - Returns the task title, description, completion state, labels, and assignees
   - `update` - Update existing task
     - Supports partial updates
     - Can update title, description, dueDate, priority, done status
@@ -1023,6 +1038,9 @@ This standardized format ensures:
   - `assign` - Bulk assign users to tasks
   - `unassign` - Remove users from tasks
   - `comment` - List or add comments to tasks
+  - `move-to-bucket` - Move a task between Kanban buckets
+    - Required: id, projectId, viewId, bucketId
+    - Uses the project view ID, not the project ID, for `viewId`
   - `bulk-update` - Update multiple tasks at once
     - Required: taskIds array, field name, value
     - Supported fields: done, priority, due_date, project_id, assignees, labels

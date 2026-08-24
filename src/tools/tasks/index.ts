@@ -122,7 +122,7 @@ export function registerTasksTool(
 ): void {
   server.tool(
     'vikunja_tasks',
-    'Manage tasks with comprehensive operations (create, update, delete, list, assign, attach files, comment, bulk operations)',
+    'Manage tasks with comprehensive operations (create, update, delete, list, assign, attach files, labels, comments, and bucket moves). Provide projectId for creation and viewId/bucketId for Kanban moves; descriptions are preserved during updates.',
     {
       subcommand: z.enum([
         'create',

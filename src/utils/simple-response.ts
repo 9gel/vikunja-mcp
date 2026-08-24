@@ -120,6 +120,13 @@ export function formatSuccessMessage(
   }
 
   if (data) {
+    // A single task can contain a `labels` array. Detect task-shaped objects
+    // before treating `labels` as a top-level collection.
+    if (isTaskLike(data)) {
+      content += formatDataItems([data as DataItem]);
+      return content;
+    }
+
     // Check for known collection types first
     const collection = data.tasks || data.projects || data.labels || data.users || data.items;
 
@@ -139,6 +146,11 @@ export function formatSuccessMessage(
   }
 
   return content;
+}
+
+function isTaskLike(data: ResponseData): data is ResponseData & { title: string; id?: number | string } {
+  return typeof data.title === 'string' &&
+    ('project_id' in data || 'projectId' in data || 'done' in data || 'bucket_id' in data);
 }
 
 /**

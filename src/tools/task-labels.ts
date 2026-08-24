@@ -24,7 +24,7 @@ export function registerTaskLabelsTool(
 ): void {
   server.tool(
     'vikunja_task_labels',
-    'Manage task labels: apply, remove, list labels',
+    'Manage task labels: apply, remove, list labels. Applying labels is idempotent and verifies the final task state.',
     {
       operation: z.enum(['apply-label', 'remove-label', 'list-labels']),
       // Task and label identification

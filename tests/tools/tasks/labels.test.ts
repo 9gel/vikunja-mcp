@@ -16,6 +16,7 @@ describe('Label operations', () => {
   const mockClient = {
     tasks: {
       addLabelToTask: jest.fn(),
+      updateTaskLabels: jest.fn(),
       removeLabelFromTask: jest.fn(),
       getTask: jest.fn(),
     },
@@ -71,6 +72,19 @@ describe('Label operations', () => {
       mockClient.tasks.addLabelToTask.mockRejectedValue(new Error('API Error'));
 
       await expect(applyLabels({ id: 1, labels: [1] })).rejects.toThrow(MCPError);
+    });
+
+    it('should reconcile a false duplicate response through bulk labels', async () => {
+      mockClient.tasks.addLabelToTask.mockRejectedValue(new Error('This label already exists on the task.'));
+      mockClient.tasks.getTask
+        .mockResolvedValueOnce({ id: 1, title: 'Test Task', labels: [] })
+        .mockResolvedValue({ id: 1, title: 'Test Task', labels: [{ id: 2, title: 'sample' }] });
+      mockClient.tasks.updateTaskLabels.mockResolvedValue({});
+
+      const result = await applyLabels({ id: 1, labels: [2] });
+
+      expect(mockClient.tasks.updateTaskLabels).toHaveBeenCalledWith(1, { label_ids: [2] });
+      expect(result.content[0].text).toContain('Label applied to task successfully');
     });
   });
 
